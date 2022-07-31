@@ -22,7 +22,7 @@ source "amazon-ebs" "ubuntu" {
   instance_type = "t2.micro"
   region        = "ap-northeast-3"
   vpc_id        = "vpc-0c1dfdfedcfe2459f"
-  #subnet_id     = "subnet-08095d31e690df562"
+  deprecate_at = timeadd(timestamp(), "8760h")
   source_ami_filter {
     filters = {
       name                = "ubuntu/images/*ubuntu-jammy-22.04-amd64-server-*"
