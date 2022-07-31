@@ -33,8 +33,8 @@ source "amazon-ebs" "ubuntu" {
     owners      = ["099720109477"]
   }
   tags = {
-    source_ami_name = "{{ .SourceAMIName }}"
-    deprecate_at    = timeadd(timestamp(), "8760h")
+    BaseAMI = "{{ .SourceAMIName }}"
+    DeprecationDate    = timeadd(timestamp(), "8760h")
   }
   ssh_username = "ubuntu"
 }
