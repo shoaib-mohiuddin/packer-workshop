@@ -1,0 +1,51 @@
+packer {
+  required_plugins {
+    amazon = {
+      version = ">= 0.0.2"
+      source  = "github.com/hashicorp/amazon"
+    }
+  }
+}
+
+variable "ami_prefix" {
+  type    = string
+  default = "packer-aws-ubuntu-ansible"
+}
+
+locals {
+  timestamp = regex_replace(timestamp(), "[- TZ:]", "")
+}
+
+
+source "amazon-ebs" "ubuntu" {
+  ami_name      = "${var.ami_prefix}-${local.timestamp}"
+  instance_type = "t2.micro"
+  region        = "ap-northeast-3"
+  vpc_id        = "vpc-0c1dfdfedcfe2459f"
+  #subnet_id     = "subnet-08095d31e690df562"
+  source_ami_filter {
+    filters = {
+      name                = "ubuntu/images/*ubuntu-jammy-22.04-amd64-server-*"
+      root-device-type    = "ebs"
+      virtualization-type = "hvm"
+    }
+    most_recent = true
+    owners      = ["099720109477"]
+  }
+  tags = {
+    source_ami_name = "{{ .SourceAMIName }}"
+    deprecate_at    = timeadd(timestamp(), "8760h")
+  }
+  ssh_username = "ubuntu"
+}
+
+build {
+  name = "learn-packer"
+  sources = [
+    "source.amazon-ebs.ubuntu"
+  ]
+  provisioner "ansible" {
+    playbook_file = "./playbook.yml"
+  }
+
+}
